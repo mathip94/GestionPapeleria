@@ -1,0 +1,100 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model PedidoViewModel
+
+<h1>Crear Pedidos</h1>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+
+<form asp-controller="Pedido" asp-action="Confirmar" method="post" class="container mt-4">
+
+    <div class="form-group">
+        <label for="ClienteId">Cliente</label>
+        <select asp-for="ClienteId" asp-items="@ViewBag.MostrarClientes" class="form-control">
+            <option value="">Seleccione un cliente</option>
+        </select>
+        <span asp-validation-for="ClienteId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="FechaPedido">Fecha Pedido</label>
+        <input asp-for="FechaPedido" type="date" class="form-control" readonly />
+        <span asp-validation-for="FechaPedido" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="FechaEntrega">Fecha de entrega</label>
+        <input asp-for="FechaEntrega" type="date" class="form-control" />
+        <span asp-validation-for="FechaEntrega" class="text-danger"></span>
+    </div>
+
+    <fieldset>
+        <legend>Detalles Pedido</legend>
+        <div id="lineasPedido">
+        </div>
+        <button type="button" id="btnAgregarLinea" class="btn btn-primary">Agregar articulos al pedido</button>
+    </fieldset>
+
+    <br /><button type="submit" name="tipoPedido" value="express" class="btn btn-success">Pedido Express</button>
+    <button type="submit" name="tipoPedido" value="comun" class="btn btn-primary">Pedido Común</button>
+</form>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let lineaIndex = 0;
+            let btnAgregarLinea = document.getElementById('btnAgregarLinea');
+            let lineasPedido = document.getElementById('lineasPedido');
+
+            btnAgregarLinea.addEventListener('click', function () {
+                let lineaHtml = `
+                                    <div class="lineaPedido form-group">
+                                        <label>Artículo:</label>
+                                        <select name="LineasPedido[${lineaIndex}].ArticuloId" class="form-control">
+                                                <option value="">Seleccione un artículo</option>
+        @foreach (var articulo in ViewBag.Articulos)
+        {
+                        <option value="@articulo.Id" data-precio="@articulo.PrecioVenta">@articulo.Nombre</option>
+        }
+                                        </select>
+                                        <label>Unidades Pedidas:</label>
+                                        <input type="number" name="LineasPedido[${lineaIndex}].UnidadesPedidas" class="form-control" />
+                                        <label>Precio Unitario:</label>
+                                        <input type="text" name="LineasPedido[${lineaIndex}].PrecioUnitario" readonly class="form-control" />
+                                    </div>
+                                `;
+
+                let div = document.createElement('div');
+                div.classList.add('lineaPedido', 'form-group');
+                div.innerHTML = lineaHtml;
+                lineasPedido.appendChild(div);
+                lineaIndex++;
+
+                // Actualizar el precio unitario cuando se selecciona un artículo
+                let selectArticulo = div.querySelector('select[name^="LineasPedido"]');
+                let inputPrecioUnitario = div.querySelector('input[name^="LineasPedido"][name$=".PrecioUnitario"]');
+                selectArticulo.addEventListener('change', function () {
+                    let selectedOption = this.options[this.selectedIndex];
+                    let precioUnitario = selectedOption.getAttribute('data-precio');
+                    inputPrecioUnitario.value = precioUnitario;
+                });
+            });
+        });
+    </script>
+}

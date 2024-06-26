@@ -1,0 +1,101 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model AnularPedidoViewModel
+
+<h1>Anulacion de Pedidos</h1>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+
+<form asp-controller="Pedido" asp-action="AnulacionPedido" method="post" class="container mt-4">
+    <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Fecha de Emisión del Pedido:</label>
+        <div class="col-sm-6">
+            <input type="date" asp-for="FechaPedido" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <button type="submit" class="btn btn-primary">Buscar Pedidos</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Pedidos != null)
+{
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Fecha Prometida de Entrega</th>
+                <th>Cliente</th>
+                <th>Total del Pedido</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Pedidos.Any())
+            {
+                @foreach (var pedido in Model.Pedidos)
+                {
+                    <tr>
+                        <td>@pedido.FechaEntrega</td>
+                        <td>@pedido.ClienteDto.RazonSocial</td>
+                        <td>@pedido.Total</td>
+                        <td>
+                            <form asp-controller="Pedido" asp-action="AnularPedido" method="post">
+                                <input type="hidden" name="pedidoId" value="@pedido.Id" />
+                                <button type="submit" class="btn btn-danger">Anular Pedido</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No se encontraron pedidos para la fecha especificada.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<style>
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        margin-bottom: 0.5rem;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 0.5rem;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .btn-primary {
+        margin-top: 0.5rem;
+    }
+</style>

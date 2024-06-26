@@ -1,0 +1,41 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model PedidoViewModel
+
+<h1>Confirmar Pedido</h1>
+<p>El total de su pedido es: @ViewBag.TotalPedido</p>
+
+<form asp-controller="Pedido" asp-action="ConfirmarPedido" method="post" class="container mt-4">
+    @Html.HiddenFor(model => model.ClienteId)
+    @Html.HiddenFor(model => model.FechaPedido)
+    @Html.HiddenFor(model => model.FechaEntrega)
+    <input type="hidden" name="tipoPedido" value="@ViewBag.TipoPedido" />
+
+    <!-- Esto genera campos ocultos para cada línea de pedido sino pedido no linea pedido no llega -->
+    @if (Model.LineasPedido != null && Model.LineasPedido.Count > 0)
+    {
+        try
+        {
+            for (int i = 0; i < Model.LineasPedido.Count; i++)
+            {
+                @Html.HiddenFor(m => m.LineasPedido[i].ArticuloId)
+                @Html.HiddenFor(m => m.LineasPedido[i].UnidadesPedidas)
+                @Html.HiddenFor(m => m.LineasPedido[i].PrecioUnitario)
+            }
+        }
+        catch (Exception ex)
+        {
+            <div class="alert alert-danger" role="alert">
+                Ocurrió un error al generar las líneas de pedido: @ex.Message
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            No hay líneas de pedido disponibles.
+        </div>
+    }
+
+    <button type="submit" class="btn btn-success">Confirmar Pedido</button>
+    <a href="@Url.Action("Crear")" class="btn btn-danger">Cancelar</a>
+</form>

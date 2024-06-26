@@ -1,0 +1,54 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model IEnumerable<UsuarioIndexViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Administrar Usuarios</h1>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Modificar Usuario</th>
+            <th>Eliminar Usuario</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.Nombre</td>
+                <td>@usuario.Apellido</td>
+                <td>@usuario.Email</td>
+                <td>
+                    <a asp-action="Update" asp-route-email="@usuario.Email" class="btn btn-primary">Modificar usuario</a>
+                </td>
+                <td><a asp-action="Delete" asp-route-email="@usuario.Email" class="btn btn-danger">Eliminar usuario</a></td>
+            </tr>
+        }
+        <a asp-action="Create" class="btn btn-success">Crear usuario</a>
+    </tbody>
+</table>
+

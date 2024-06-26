@@ -1,0 +1,14 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model UsuarioDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Borrar Usuario</h1>
+
+<form asp-action="DeleteConfirmed">
+    <input type="hidden" asp-for="Email" />
+    <h4>Estas seguro que queres borrar este usuario?</h4>
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

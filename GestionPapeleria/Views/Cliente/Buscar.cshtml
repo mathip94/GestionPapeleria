@@ -1,0 +1,42 @@
+﻿@using GestionPapeleriaWebApp.Models;
+@model ClienteIndexViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<h1>Buscar Clientes</h1>
+
+<form asp-controller="Cliente" asp-action="BuscarPorTexto" method="post">
+    <div class="form-group">
+        <label for="TextoBusqueda">Buscar por razon social:</label>
+        <input type="text" class="form-control" id="TextoBusqueda" name="TextoBusqueda" value="@Model.TextoBusqueda" />
+    </div>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+<form asp-controller="Cliente" asp-action="BuscarPorMonto" method="post">
+    <div class="form-group">
+        <label for="Monto">Buscar por compra con monto mayor a:</label>
+        <input type="number" class="form-control" id="Monto" name="Monto" value="@Model.Monto" />
+    </div>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+@if (Model.Resultados != null)
+{
+    <h3>Resultados de la búsqueda:</h3>
+    @if (Model.Resultados.Any())
+    {
+        <ul>
+            @foreach (var cliente in Model.Resultados)
+            {
+                <li>@cliente.RazonSocial</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No se encontraron resultados para esos parámetros</p>
+    }
+}
